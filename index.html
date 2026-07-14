@@ -1,1 +1,503 @@
 
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GMW | Genuine Motor Work | تولید و تامین قطعات خودرو</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="وب‌سایت رسمی GMW (Genuine Motor Work). تولید و تامین قطعات خودرو با رویکرد مهندسی، کیفیت و استانداردهای حرفه‌ای.">
+    <meta name="keywords" content="لنت ترمز, قطعات خودرو, قطعات یدکی خودرو, لوازم یدکی, GMW, Genuine Motor Work, جنیون موتور ورک">
+    <meta name="author" content="GMW">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://gmw.ir/">
+    <meta property="og:title" content="GMW | Genuine Motor Work | تولید و تامین قطعات خودرو">
+    <meta property="og:description" content="وب‌سایت رسمی GMW (Genuine Motor Work). تولید و تامین قطعات خودرو با رویکرد مهندسی، کیفیت و استانداردهای حرفه‌ای.">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?q=80&w=1200&auto=format&fit=crop">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://gmw.ir/">
+    <meta property="twitter:title" content="GMW | Genuine Motor Work | تولید و تامین قطعات خودرو">
+    <meta property="twitter:description" content="وب‌سایت رسمی GMW (Genuine Motor Work). تولید و تامین قطعات خودرو با رویکرد مهندسی، کیفیت و استانداردهای حرفه‌ای.">
+    <meta property="twitter:image" content="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?q=80&w=1200&auto=format&fit=crop">
+
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Vazirmatn:wght@300;500;700;900&display=swap" rel="stylesheet">
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "GMW (Genuine Motor Work)",
+      "alternateName": "جنیون موتور ورک",
+      "url": "https://gmw.ir",
+      "logo": "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?q=80&w=200&auto=format&fit=crop",
+      "description": "تولید و تامین قطعات خودرو با رویکرد مهندسی، کیفیت و استانداردهای حرفه‌ای.",
+      "contactPoint": [
+        {
+          "@type": "ContactPoint",
+          "telephone": "+98-2128427747",
+          "contactType": "sales",
+          "areaServed": "IR",
+          "availableLanguage": "Persian"
+        },
+        {
+          "@type": "ContactPoint",
+          "telephone": "+98-4133339430",
+          "contactType": "sales",
+          "areaServed": "IR",
+          "availableLanguage": "Persian"
+        }
+      ]
+    }
+    </script>
+
+    <style>
+        :root {
+            --bg-matte-black: #0d0d0c;
+            --bg-card: #141413;
+            --orange-accent: #ff6a00;
+            --orange-glow: rgba(255, 106, 0, 0.15);
+            --orange-glow-strong: rgba(255, 106, 0, 0.4);
+            --text-primary: #ffffff;
+            --text-secondary: #a3a3a3;
+            --text-muted: #666666;
+            --border-color: rgba(255, 106, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+            background-color: var(--bg-matte-black);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Ambient Background Glows */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -10%;
+            left: -10%;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(circle, var(--orange-glow) 0%, rgba(0,0,0,0) 70%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: -10%;
+            right: -10%;
+            width: 50%;
+            height: 50%;
+            background: radial-gradient(circle, var(--orange-glow) 0%, rgba(0,0,0,0) 70%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        header, main, footer {
+            position: relative;
+            z-index: 2;
+        }
+
+        header {
+            padding: 40px 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .brand-logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            font-weight: 900;
+            letter-spacing: 4px;
+            background: linear-gradient(135deg, #ffffff 30%, var(--orange-accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
+
+        .brand-logo::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--orange-accent), transparent);
+        }
+
+        .tagline-top {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-family: 'Orbitron', sans-serif;
+            border-left: 2px solid var(--orange-accent);
+            padding-left: 10px;
+        }
+
+        main {
+            flex-grow: 1;
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            align-items: center;
+            gap: 5%;
+            padding: 0 10% 40px 10%;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-text-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            align-self: flex-start;
+            gap: 8px;
+            background: rgba(255, 106, 0, 0.08);
+            border: 1px solid rgba(255, 106, 0, 0.25);
+            padding: 8px 18px;
+            border-radius: 50px;
+            color: var(--orange-accent);
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 15px var(--orange-glow);
+        }
+
+        .status-badge .dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--orange-accent);
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        h1 {
+            font-size: 4.5rem;
+            font-weight: 900;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            letter-spacing: -1px;
+            color: #ffffff;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        h1 span {
+            color: var(--orange-accent);
+            position: relative;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            line-height: 1.9;
+            color: var(--text-secondary);
+            margin-bottom: 40px;
+            font-weight: 300;
+        }
+
+        .subtitle strong {
+            color: #fff;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 1.35rem;
+            margin: 0 4px;
+        }
+
+        /* Hero Image Container - CNC Industrial Luxury Style */
+        .hero-image-wrapper {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 60px -15px rgba(0,0,0,0.9), 0 0 30px rgba(255, 106, 0, 0.05);
+            aspect-ratio: 16 / 10;
+        }
+
+        .hero-image-wrapper::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(210deg, transparent 40%, rgba(13, 13, 12, 0.95) 100%);
+            z-index: 2;
+        }
+
+        /* Metallic Orange Framing lines */
+        .hero-image-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            bottom: 20px;
+            left: 20px;
+            border: 1px solid rgba(255, 106, 0, 0.15);
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: grayscale(20%) contrast(110%) brightness(85%);
+            transition: transform 8s ease;
+        }
+
+        .hero-image-wrapper:hover .hero-image {
+            transform: scale(1.05);
+        }
+
+        /* Tech Spec Overlay on Image */
+        .tech-spec-tag {
+            position: absolute;
+            bottom: 35px;
+            right: 35px;
+            background: rgba(13, 13, 12, 0.85);
+            backdrop-filter: blur(10px);
+            border-right: 3px solid var(--orange-accent);
+            padding: 12px 20px;
+            z-index: 4;
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            border-radius: 0 4px 4px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .tech-spec-tag span {
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        /* Contact Section */
+        footer {
+            background-color: var(--bg-card);
+            border-top: 1px solid var(--border-color);
+            padding: 50px 10%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 40px;
+        }
+
+        .contact-grid {
+            display: flex;
+            gap: 60px;
+        }
+
+        .contact-card {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .contact-card .city {
+            font-size: 0.9rem;
+            color: var(--orange-accent);
+            font-weight: 700;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .contact-card .city::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            background-color: var(--orange-accent);
+            border-radius: 50%;
+        }
+
+        .contact-card .address {
+            font-size: 1.05rem;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .contact-card .phone {
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.3s;
+            font-family: 'Vazirmatn', sans-serif;
+            display: inline-block;
+            direction: ltr;
+            text-align: right;
+        }
+
+        .contact-card .phone:hover {
+            color: #ffffff;
+        }
+
+        .copyright-container {
+            text-align: left;
+        }
+
+        .copyright {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% {
+                transform: scale(0.9);
+                opacity: 0.4;
+                box-shadow: 0 0 0 0 var(--orange-glow-strong);
+            }
+            70% {
+                transform: scale(1);
+                opacity: 1;
+                box-shadow: 0 0 0 8px rgba(255, 106, 0, 0);
+            }
+            100% {
+                transform: scale(0.9);
+                opacity: 0.4;
+                box-shadow: 0 0 0 0 rgba(255, 106, 0, 0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            main {
+                grid-template-columns: 1fr;
+                gap: 50px;
+                padding-bottom: 60px;
+            }
+            .hero-image-wrapper {
+                max-width: 700px;
+                margin: 0 auto;
+                width: 100%;
+            }
+            footer {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 40px;
+            }
+            .contact-grid {
+                flex-direction: column;
+                gap: 30px;
+                width: 100%;
+            }
+            .copyright-container {
+                text-align: right;
+                width: 100%;
+                border-top: 1px solid rgba(255, 255, 255, 0.05);
+                padding-top: 25px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            header {
+                padding: 30px 6%;
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+            main {
+                padding: 0 6% 50px 6%;
+            }
+            h1 {
+                font-size: 3.2rem;
+            }
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            .status-badge {
+                font-size: 0.75rem;
+            }
+            footer {
+                padding: 40px 6%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header Logo Section -->
+    <header>
+        <div class="brand-logo" aria-label="GMW Logo">GMW</div>
+        <div class="tagline-top">GENUINE MOTOR WORK</div>
+    </header>
+
+    <!-- Hero Showcase Section -->
+    <main>
+        <div class="hero-text-container">
+            <div class="status-badge">
+                <span class="dot"></span>
+                در حال ارتقاء و توسعه فنی
+            </div>
+            <h1>در راه است<span>...</span></h1>
+            <p class="subtitle">
+                وب‌سایت رسمی <strong>GMW</strong><br>
+                <span>Genuine Motor Work</span> به عنوان مرجع تخصصی طراحی، تولید و تامین قطعات خودرو با کیفیت مهندسی و استانداردهای تراز اول، به‌زودی آغاز به کار خواهد کرد.
+            </p>
+        </div>
+
+        <div class="hero-image-wrapper">
+            <img class="hero-image" 
+                 src="https://images.unsplash.com/photo-1617814076367-b759c7d7e738?q=80&w=1200&auto=format&fit=crop" 
+                 alt="مهندسی ساخت قطعات خودرو لوکس GMW و لنت ترمزهای سرامیکی مدرن">
+            <div class="tech-spec-tag">
+                <span>GMW PRECISION</span>
+                HIGH-END BRAKE SYSTEMS
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer Contact Section -->
+    <footer>
+        <div class="contact-grid">
+            <div class="contact-card">
+                <div class="city">دفتر مرکزی تهران</div>
+                <div class="address">پاسداران، برج سفید</div>
+                <a href="tel:02128427747" class="phone">۰۲۱-۲۸۴۲۷۷۴۷</a>
+            </div>
+            <div class="contact-card">
+                <div class="city">دفتر تبریز</div>
+                <div class="address">ولیعصر</div>
+                <a href="tel:04133339430" class="phone">۰۴۱-۳۳۳۳۹۴۳۰</a>
+            </div>
+        </div>
+        <div class="copyright-container">
+            <div class="copyright">© 2026 GMW | GENUINE MOTOR WORK. ALL RIGHTS RESERVED.</div>
+        </div>
+    </footer>
+
+</body>
+</html>
