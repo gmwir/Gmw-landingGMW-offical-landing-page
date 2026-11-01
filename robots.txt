@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://gmw.ir/sitemap.xml
