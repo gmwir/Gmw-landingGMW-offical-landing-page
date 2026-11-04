@@ -199,3 +199,59 @@ fieldset.chips{border:0;padding:0;margin:0 0 16px}fieldset.chips legend{font-wei
 .partner{display:flex;align-items:center;justify-content:center;aspect-ratio:2/1;border-radius:var(--r-s);background:#fff;overflow:hidden;font-weight:800;font-size:1.05rem;color:#1a1a22;text-align:center;box-shadow:0 1px 0 rgba(255,255,255,.2) inset}
 .partner img{display:block;width:100%;height:100%;object-fit:contain}
 @media(min-width:900px){.hero-partners{max-width:380px;margin-inline:auto;width:100%}.partner-grid{gap:12px}}
+
+/* ───────── v0.4: داشبورد آمار، بنر حریم خصوصی ───────── */
+.chart{width:100%;height:auto;display:block;margin:.4rem 0 1rem;direction:ltr}
+.chart .grid{stroke:var(--line);stroke-width:1;stroke-dasharray:3 4}
+.chart .tick{fill:var(--muted);font-size:10px}
+.chart .bar{fill:var(--brand-2)}.chart .bar2{fill:var(--link);opacity:.95}
+.sw{display:inline-block;width:10px;height:10px;border-radius:3px;margin-inline:.35rem .15rem;vertical-align:baseline}
+.sw.s1{background:var(--brand-2)}.sw.s2{background:var(--link)}
+.consent{position:fixed;inset-inline:12px;bottom:calc(12px + env(safe-area-inset-bottom));z-index:60;max-width:560px;margin-inline:auto;background:var(--card-2);border:1px solid var(--line-2);border-radius:var(--r-s);padding:14px 16px;box-shadow:0 20px 50px -16px #000}
+.consent p{margin:0 0 .6em;font-size:.92rem;line-height:1.8}
+
+/* ───────── v0.4: ظرافت تایپوگرافی، فاصله‌گذاری و موبایل ───────── */
+h1{line-height:1.4}h2{line-height:1.5}
+.hero h1{max-width:18ch;text-wrap:balance}
+.hero::before{content:"";position:absolute;inset-inline-start:-140px;bottom:-170px;width:460px;height:460px;opacity:.09;pointer-events:none;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200' fill='none' stroke='%23C22A54' stroke-width='1.2'%3E%3Ccircle cx='100' cy='100' r='96'/%3E%3Ccircle cx='100' cy='100' r='84'/%3E%3Ccircle cx='100' cy='100' r='52'/%3E%3Ccircle cx='100' cy='100' r='22'/%3E%3Cg stroke-width='5' stroke-linecap='round'%3E%3Cpath d='M100 24v20M100 156v20M24 100h20M156 100h20M46 46l14 14M140 140l14 14M154 46l-14 14M60 140l-14 14'/%3E%3C/g%3E%3Cg%3E%3Ccircle cx='100' cy='70' r='4'/%3E%3Ccircle cx='100' cy='130' r='4'/%3E%3Ccircle cx='70' cy='100' r='4'/%3E%3Ccircle cx='130' cy='100' r='4'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat}
+.hero-copy>.chips,.hero-copy .pills{display:flex;flex-wrap:wrap;gap:8px}
+.section h2::after{content:"";display:block;width:44px;height:3px;border-radius:3px;margin-top:10px;background:linear-gradient(90deg,var(--accent),transparent)}
+.section.alt h2::after,.hero h2::after,.consent h2::after{display:none}
+input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(168,32,67,.28);outline:none}
+@media(max-width:640px){
+  .section{padding:34px 0}
+  .table-wrap{margin-inline:-16px;padding-inline:16px}
+  .tiles{grid-template-columns:repeat(2,1fr)}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* ───────── v0.5: مأموریت برند ───────── */
+.section-lead{max-width:70ch;color:var(--muted);font-size:1.05rem;margin:0 0 22px}
+.pillars{display:grid;gap:14px;margin:0 0 22px}
+@media(min-width:700px){.pillars{grid-template-columns:repeat(2,1fr)}}@media(min-width:1100px){.pillars{grid-template-columns:repeat(4,1fr)}}
+.pillars>div{position:relative;background:linear-gradient(180deg,var(--card),var(--card-2));border:1px solid var(--line);border-radius:var(--r);padding:22px 20px 20px;border-top:2px solid var(--accent)}
+.pillars h3{margin:.2em 0 .4em;font-size:1.05rem}.pillars p{margin:0;color:var(--muted);font-size:.95rem;line-height:1.9}
+.pillars .pn{font-size:.8rem;color:var(--accent-2);letter-spacing:.08em;font-weight:700}
+.journey{list-style:none;margin:0 0 22px;padding:0;display:grid;gap:12px}@media(min-width:800px){.journey{grid-template-columns:repeat(3,1fr)}}
+.journey li{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px 20px;display:flex;flex-direction:column;gap:6px}
+.journey b{color:var(--ink)}.journey span{color:var(--muted);font-size:.95rem}
+
+/* ===== v0.6: مسیر صفحه، اطلاعات خدمت، فروشگاه ===== */
+.crumbs{border-bottom:1px solid var(--line,#ffffff14);font-size:.85rem;background:transparent}
+.crumbs ol{display:flex;flex-wrap:wrap;gap:.25rem;list-style:none;margin:0;padding:.6rem 0}
+.crumbs li+li::before{content:"‹";margin-inline:.4rem;opacity:.5}
+.crumbs a{opacity:.8;text-decoration:none}.crumbs a:hover{opacity:1;text-decoration:underline}
+.crumbs [aria-current]{opacity:.65}
+.svc-info{margin-top:2rem}
+.svc-info h2{margin-bottom:1rem}
+.svc-info dl{display:grid;grid-template-columns:1fr;gap:.9rem;margin:0}
+.svc-info .si{border:1px solid var(--line,#ffffff1f);border-radius:14px;padding:1rem 1.1rem;background:#ffffff06}
+.svc-info dt{font-weight:700;margin-bottom:.35rem}
+.svc-info dd{margin:0;opacity:.88;line-height:1.9}
+.svc-info dd ul,.svc-info dd ol{margin:.2rem 0 0;padding-inline-start:1.2rem}
+@media(min-width:800px){.svc-info dl{grid-template-columns:1fr 1fr}}
+.table-wrap{overflow-x:auto}.table.compare th,.table.compare td{padding:.6rem .8rem;border-bottom:1px solid #ffffff14;text-align:start}
+.brand-logo img{max-width:240px;height:auto;background:#fff;border-radius:12px;padding:.6rem}
+.row{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.2rem}
+.shop .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));overflow:visible;margin-inline:0;padding-inline:0;gap:16px}.shop .card{flex:none;max-width:none}

@@ -95,10 +95,22 @@
       box.innerHTML = '<p><b>برای ثبت نهایی و هماهنگی،</b> کد رهگیری بالا را به پشتیبانی GMW اعلام کنید:</p><div class="row">' + phones + ' <button type="button" class="btn tiny" data-copy>کپی متن درخواست</button></div>';
       var b = box.querySelector('[data-copy]'); if (b) b.addEventListener('click', function () { try { navigator.clipboard.writeText(text).then(function () { b.textContent = 'کپی شد'; }); } catch (e) { b.textContent = 'کپی ممکن نشد'; } });
     }
+    /* نسخهٔ پشتیبان در Google Sheet (اختیاری): فقط اگر endpoint تنظیم شده باشد؛ شکست آن مشتری را متأثر نمی‌کند. */
+    function post() { return fetch(CFG.endpoint, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ kind: id, tracking: tracking, text: text, data: v, at: new Date().toISOString(), page: location.pathname }) }); }
+    function mirror() { if (CFG.endpoint) { try { post().catch(function () {}); } catch (e) {} } }
+    var SB = window.GMWSupa;
+    if (SB && SB.configured) {   // Supabase: فقط از تابع submit_lead؛ جدول‌ها برای عموم بسته‌اند
+      var KIND = { 'warranty-form': 'warranty', 'coverage-form': 'coverage', 'brake-form': 'brake', 'club-join': 'club', 'tire-form': 'tire', 'basket-form': 'basket', 'insurance-form': 'insurance', 'contact-form': 'contact' };
+      var pl = {}; Object.keys(v).forEach(function (k) { var x = v[k]; if (k === 'acceptTerms' || k === 'name' || k === 'phone' || k === 'city' || x == null || x === '' || x === false) return; pl[k] = (x && typeof x === 'object' && !Array.isArray(x)) ? (x.name || '') : x; });
+      box.innerHTML = '<p class="hint">در حال ثبت درخواست…</p>';
+      SB.rpcAnon('submit_lead', { p_kind: KIND[id], p_tracking: tracking, p_name: v.name || '', p_phone: C.normalizePhone(v.phone || ''), p_city: v.city || '', p_payload: pl, p_consent: !!(v.consentMarketing || v.consentNotify || v.consent), p_page: location.pathname })
+        .then(function () { mirror(); box.innerHTML = '<p><b>درخواست شما ثبت شد.</b> کارشناسان با شمارهٔ ثبت‌شده تماس می‌گیرند. در صورت نیاز: ' + phones + '</p>'; }, manual);
+      return;
+    }
     if (!CFG.endpoint) { manual(); return; }
     box.innerHTML = '<p class="hint">در حال ارسال درخواست برای تیم GMW…</p>';
     try {
-      fetch(CFG.endpoint, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ kind: id, tracking: tracking, text: text, data: v, at: new Date().toISOString(), page: location.pathname }) })
+      post()
         .then(function () { box.innerHTML = '<p><b>درخواست برای تیم GMW ارسال شد.</b> کارشناسان با شمارهٔ ثبت‌شده تماس می‌گیرند. در صورت نیاز: ' + phones + '</p>'; }, manual);
     } catch (e) { manual(); }
   }
