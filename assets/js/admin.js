@@ -1,4 +1,4 @@
-/* GMW admin.js — پنل مدیریت آزمایشی (بدون احراز هویت واقعی). نقش‌ها فقط سطح دسترسی معماری را نشان می‌دهند. */
+/* GMW admin.js — ابزارهای گردش‌کار آزمایشی محلی (/admin/#local؛ بدون احراز هویت و بدون اتصال به پایگاه داده). نقش‌ها فقط سطح دسترسی معماری را نشان می‌دهند. */
 (function () {
   'use strict';
   var C = window.GMWCore, KEY = 'gmw_demo_state_v1', ROLE_KEY = 'gmw_admin_role';
@@ -6,6 +6,13 @@
   var state = load();
   function save() { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} }
   var root = document.getElementById('admin-root');
+  /* حالت پیش‌فرض: فقط پنل واقعی (Supabase). ابزارهای گردش‌کار آزمایشی قدیمی فقط با /admin/#local در دسترس‌اند و داده‌شان فقط در همین مرورگر است. */
+  if (location.hash !== '#local') {
+    root.innerHTML = '<div id="live-root"></div><p class="hint local-link"><a href="#local" id="go-local">ابزارهای گردش‌کار آزمایشی (محلی؛ بدون اتصال به پایگاه داده)</a></p>';
+    if (window.GMWLive) window.GMWLive.mount(document.getElementById('live-root'));
+    document.getElementById('go-local').addEventListener('click', function () { setTimeout(function () { location.reload(); }, 0); });
+    return;
+  }
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
   function fa(n) { return new Intl.NumberFormat('fa-IR').format(n); }
   var T = C.formatToman, D = C.formatDate;
