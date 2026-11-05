@@ -8,7 +8,7 @@
   --r:20px;--r-s:14px;
   --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 24px 48px -28px rgba(0,0,0,.9);
   --glow:0 0 0 1px rgba(168,32,67,.55),0 28px 56px -28px rgba(168,32,67,.45);
-  --font:"Inter","Estedad","Vazirmatn","Noto Sans Arabic UI","Noto Sans Arabic","SF Arabic",system-ui,-apple-system,"Geeza Pro","Segoe UI",Tahoma,sans-serif;
+  --font:"Inter","IBM Plex Sans Arabic",sans-serif;
   --font-tech:"Inter Tech","Inter",system-ui,sans-serif;
   --font-brand:"GMW Wordmark","Tektur","Segoe UI",system-ui,sans-serif;
 }
