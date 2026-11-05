@@ -359,3 +359,21 @@ body:has(.total-bar:not([hidden])) .wa-float{bottom:calc(84px + env(safe-area-in
 .qs-link .ic{flex:none;color:var(--accent)}
 .qs-link span{flex:1}
 .qs-link .qs-arrow{opacity:.8}
+
+/* جدول سیاست گارانتی */
+.tbl-wrap{border:1px solid var(--line);border-radius:var(--r-s);overflow:hidden;margin:12px 0}
+.policy-table{width:100%;min-width:0;border-collapse:collapse;margin:0}
+.policy-table th,.policy-table td{padding:12px 14px;text-align:start;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.8}
+.policy-table thead th{background:var(--card-2);color:var(--ink);font-weight:700}
+.policy-table tbody tr:last-child td{border-bottom:0}
+.policy-table td:nth-child(2){white-space:nowrap;font-weight:700;color:var(--ink)}
+@media(max-width:600px){
+  .policy-table thead{display:none}
+  .policy-table,.policy-table tbody,.policy-table tr,.policy-table td{display:block;width:100%}
+  .policy-table tr{padding:10px 0;border-bottom:1px solid var(--line)}
+  .policy-table tbody tr:last-child{border-bottom:0}
+  .policy-table td{border:0;padding:4px 14px}
+  .policy-table td:nth-child(1){font-weight:700;color:var(--ink)}
+  .policy-table td:nth-child(2){white-space:normal;color:var(--accent-2)}
+  .policy-table td:nth-child(3){color:var(--muted);font-size:.9rem}
+}
