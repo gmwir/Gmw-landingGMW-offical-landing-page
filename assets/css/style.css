@@ -352,3 +352,10 @@ body:has(.total-bar:not([hidden])) .wa-float{bottom:calc(84px + env(safe-area-in
 .labor-qty:disabled{opacity:.45}
 @media(max-width:480px){.labor-row{flex-wrap:wrap}.labor-qty{width:100%}}
 .labor-row:not(:has(input:checked)) .labor-qty{display:none}
+
+/* نوار کوتاه دسترسی سریع زیر هیرو */
+.qs-link{display:flex;align-items:center;gap:10px;min-height:48px;margin-top:14px;max-width:520px;padding:8px 14px;border:1px solid rgba(240,128,32,.45);border-radius:var(--r-s);background:linear-gradient(90deg,rgba(240,128,32,.14),rgba(20,23,27,.9));color:var(--ink);text-decoration:none;font-size:.92rem;line-height:1.5;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.qs-link:hover{text-decoration:none;border-color:var(--accent)}
+.qs-link .ic{flex:none;color:var(--accent)}
+.qs-link span{flex:1}
+.qs-link .qs-arrow{opacity:.8}

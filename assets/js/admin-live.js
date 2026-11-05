@@ -5,10 +5,10 @@
   'use strict';
   var S = window.GMWSupa, fa = function (n) { return new Intl.NumberFormat('fa-IR').format(n || 0); };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-  var KIND = { warranty: 'گارانتی', coverage: 'پوشش چهارساله', brake: 'لنت', club: 'عضویت باشگاه', tire: 'لاستیک', basket: 'سبد اقتصادی', insurance: 'بیمه', contact: 'پیام تماس' };
+  var KIND = { warranty: 'گارانتی', coverage: 'پوشش چهارساله', brake: 'لنت', club: 'عضویت باشگاه', tire: 'لاستیک', basket: 'سبد اقتصادی', insurance: 'کارت تخفیف بیمه', contact: 'پیام تماس' };
   var STATUS = { 'new': 'جدید', in_review: 'در حال بررسی', approved: 'تأیید شده', rejected: 'رد شده', done: 'انجام شد' };
   var SETTABLE = ['in_review', 'approved', 'rejected', 'done'];   // وضعیت‌هایی که تابع decide_lead می‌پذیرد
-  var LABEL = { requestType: 'نوع فرم', claimType: 'درخواست مشتری', defect: 'ایراد قطعه', warrantyRef: 'کد رهگیری گارانتی', laborItems: 'عملیات اجرت نصب', laborTotal: 'جمع اجرت تقریبی (تومان)', iban: 'شمارهٔ شبا', accountHolder: 'صاحب حساب', scratchCode: 'کد اسکرچ', serial: 'سریال قطعه', partName: 'نام قطعه', brand: 'برند', specs: 'مشخصات قطعه', vehicleModel: 'مدل خودرو', vehicleYear: 'سال ساخت', year: 'سال ساخت',
+  var LABEL = { insuranceType: 'نوع بیمه', insurer: 'بیمه‌گر فعلی', expiry: 'پایان بیمه‌نامهٔ فعلی', requestType: 'نوع فرم', claimType: 'درخواست مشتری', defect: 'ایراد قطعه', warrantyRef: 'کد رهگیری گارانتی', laborItems: 'عملیات اجرت نصب', laborTotal: 'جمع اجرت تقریبی (تومان)', iban: 'شمارهٔ شبا', accountHolder: 'صاحب حساب', scratchCode: 'کد اسکرچ', serial: 'سریال قطعه', partName: 'نام قطعه', brand: 'برند', specs: 'مشخصات قطعه', vehicleModel: 'مدل خودرو', vehicleYear: 'سال ساخت', year: 'سال ساخت',
     purchaseDate: 'تاریخ خرید', buyerName: 'نام خریدار', buyerPhone: 'موبایل خریدار', seller: 'فروشنده', invoice: 'فاکتور', message: 'متن پیام', subject: 'موضوع', model: 'مدل خودرو',
     mileage: 'کارکرد', accident: 'سابقهٔ تصادف', address: 'نشانی', parts: 'قطعات', owner: 'مالک', padClass: 'کلاس لنت', centerId: 'مرکز', size: 'سایز', type: 'نوع', notes: 'توضیحات',
     symptoms: 'علائم', insurer: 'شرکت بیمه', expiry: 'پایان بیمه', categories: 'دسته‌ها', repairs: 'تعمیرات', code: 'کد' };

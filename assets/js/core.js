@@ -487,10 +487,11 @@
       req(e, 'name', input.name, 'نام را وارد کنید');
       if (!isValidMobile(input.phone)) e.phone = 'شماره موبایل معتبر نیست';
       req(e, 'model', input.model, 'مدل خودرو را وارد کنید');
+      req(e, 'insuranceType', input.insuranceType, 'نوع بیمه را انتخاب کنید');
       req(e, 'insurer', input.insurer, 'بیمه‌گر فعلی یا «ندارم» را بنویسید');
       if (!input.consentNotify) e.consentNotify = 'برای اطلاع‌رسانی، رضایت لازم است';
       if (hasErr(e)) return { ok: false, errors: e };
-      rec = { name: clean(input.name), phone: normalizePhone(input.phone), model: clean(input.model), insurer: clean(input.insurer), expiry: clean(input.expiry), status: 'registered_interest', consentNotify: true };
+      rec = { name: clean(input.name), phone: normalizePhone(input.phone), model: clean(input.model), insuranceType: clean(input.insuranceType), insurer: clean(input.insurer), expiry: clean(input.expiry), status: 'registered_interest', consentNotify: true };
     } else if (kind === 'contact') {
       list = 'contacts'; letter = 'M';
       req(e, 'name', input.name, 'نام را وارد کنید');
