@@ -166,47 +166,29 @@
   }
 
   /* ---------- فعال‌سازی گارانتی و اصالت‌سنجی ---------- */
-  var WARRANTY_STATUS = { pending_review: 'ثبت شد — در انتظار بررسی فاکتور', active: 'فعال', rejected: 'رد شد' };
+  var WARRANTY_STATUS = { pending_review: 'ثبت شد — در انتظار بررسی', active: 'فعال', rejected: 'رد شد' };
 
   function registerWarranty(state, input, now) {
     now = now || new Date();
     var e = {};
     var scratch = normCode(input.scratchCode);
-    var serial = clean(input.serial);
     req(e, 'scratchCode', scratch, 'کد اسکرچ را وارد کنید');
-    req(e, 'serial', serial, 'شناسه یا سریال قطعه را وارد کنید');
     req(e, 'partName', input.partName, 'نام قطعه را وارد کنید');
     req(e, 'brand', input.brand, 'برند را وارد کنید');
-    req(e, 'vehicleModel', input.vehicleModel, 'مدل خودرو را وارد کنید');
-    checkVehicleYear(e, 'vehicleYear', input.vehicleYear);
-    req(e, 'buyerName', input.buyerName, 'نام خریدار را وارد کنید');
+    req(e, 'buyerName', input.buyerName, 'نام و نام خانوادگی را وارد کنید');
     if (!isValidMobile(input.buyerPhone)) e.buyerPhone = 'شماره موبایل معتبر نیست (مثال: ۰۹۱۲۳۴۵۶۷۸۹)';
-    req(e, 'seller', input.seller, 'نام فروشنده را وارد کنید');
-    var pd = new Date(input.purchaseDate);
-    if (!input.purchaseDate || isNaN(pd)) e.purchaseDate = 'تاریخ خرید را انتخاب کنید';
-    else if (pd.getTime() > now.getTime() + 86400000) e.purchaseDate = 'تاریخ خرید نمی‌تواند در آینده باشد';
-    else if (pd.getUTCFullYear() < 2000) e.purchaseDate = 'تاریخ خرید معتبر نیست';
-    if (!input.invoice || !input.invoice.name) e.invoice = 'تصویر فاکتور را پیوست کنید';
-    else if (input.invoice.size > 8 * 1024 * 1024) e.invoice = 'حجم فایل حداکثر ۸ مگابایت باشد';
-    else if (input.invoice.type && !/^(image\/|application\/pdf$)/.test(input.invoice.type)) e.invoice = 'فقط تصویر یا PDF پذیرفته می‌شود';
     if (hasErr(e)) return { ok: false, errors: e };
 
     var code = state.scratchCodes.filter(function (c) { return normCode(c.code) === scratch; })[0];
     if (!code && state.settings.codeRegistry === false) { code = { code: scratch, status: 'unused' }; state.scratchCodes.push(code); }   // بدون پایگاه کد: اصالت کد را کارشناس بررسی می‌کند
     if (!code) return { ok: false, errors: { scratchCode: 'این کد در سامانه یافت نشد. کد را دوباره بررسی کنید.' } };
     if (code.status !== 'unused') return { ok: false, errors: { scratchCode: 'این کد قبلاً استفاده شده و دوباره قابل ثبت نیست.' } };
-    var sKey = normCode(serial);
-    if (state.warranties.some(function (w) { return w.serialKey === sKey; }))
-      return { ok: false, errors: { serial: 'این سریال قبلاً ثبت شده است.' } };
-
     var cust = upsertCustomer(state, { name: input.buyerName, phone: input.buyerPhone });
     var rec = {
       id: uid('war'), trackingCode: trackingCode(state, 'W'),
-      scratchCode: code.code, serial: serial, serialKey: sKey,
-      partName: clean(input.partName), brand: clean(input.brand), specs: clean(input.specs),
-      vehicleModel: clean(input.vehicleModel), vehicleYear: parseInt(normalizeDigits(input.vehicleYear), 10),
-      purchaseDate: isoDay(pd), buyerName: clean(input.buyerName), buyerPhone: normalizePhone(input.buyerPhone),
-      seller: clean(input.seller), invoiceFile: { name: String(input.invoice.name), size: input.invoice.size || 0, type: input.invoice.type || '' },
+      scratchCode: code.code,
+      partName: clean(input.partName), brand: clean(input.brand),
+      buyerName: clean(input.buyerName), buyerPhone: normalizePhone(input.buyerPhone),
       status: 'pending_review', customerId: cust.id, createdAt: now.toISOString()
     };
     code.status = 'used'; code.usedBy = rec.trackingCode;
@@ -218,9 +200,9 @@
   function lookupWarranty(state, q) {
     var k = normCode(q);
     if (!k) return null;
-    var w = state.warranties.filter(function (x) { return normCode(x.trackingCode) === k || x.serialKey === k; })[0];
+    var w = state.warranties.filter(function (x) { return normCode(x.trackingCode) === k || normCode(x.scratchCode) === k || x.serialKey === k; })[0];
     if (!w) return null;
-    return { trackingCode: w.trackingCode, partName: w.partName, brand: w.brand, purchaseDate: w.purchaseDate, status: w.status, statusLabel: WARRANTY_STATUS[w.status] };
+    return { trackingCode: w.trackingCode, partName: w.partName, brand: w.brand, purchaseDate: w.purchaseDate, createdAt: w.createdAt, status: w.status, statusLabel: WARRANTY_STATUS[w.status] };
   }
 
   /* ---------- طرح پوشش سه‌ساله ---------- */
@@ -459,8 +441,8 @@
     var m = state.clubMembers.filter(function (x) { return x.phone === phone; })[0];
     if (!m) return { ok: false, error: 'ابتدا وارد باشگاه شوید' };
     var k = normCode(code);
-    var w = state.warranties.filter(function (x) { return normCode(x.trackingCode) === k || x.serialKey === k; })[0];
-    if (!w) return { ok: false, error: 'گارانتی با این کد رهگیری/سریال یافت نشد' };
+    var w = state.warranties.filter(function (x) { return normCode(x.trackingCode) === k || normCode(x.scratchCode) === k || x.serialKey === k; })[0];
+    if (!w) return { ok: false, error: 'گارانتی با این کد رهگیری/کد اسکرچ یافت نشد' };
     if (w.buyerPhone !== phone) return { ok: false, error: 'این گارانتی با شماره موبایل دیگری ثبت شده و به این حساب متصل نمی‌شود' };
     if (m.linkedCodes.indexOf(w.trackingCode) >= 0) return { ok: false, error: 'این کد قبلاً متصل شده است' };
     m.linkedCodes.push(w.trackingCode);

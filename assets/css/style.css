@@ -255,3 +255,14 @@ input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 
 .brand-logo img{max-width:240px;height:auto;background:#fff;border-radius:12px;padding:.6rem}
 .row{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.2rem}
 .shop .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));overflow:visible;margin-inline:0;padding-inline:0;gap:16px}.shop .card{flex:none;max-width:none}
+
+/* طرح سه‌ساله: وعدهٔ اصلی و شرایط، برجسته و بدون ابهام */
+.plan-promise{margin:0 0 24px;padding:26px 24px 22px;border-radius:var(--r);border:1px solid var(--accent);background:linear-gradient(180deg,rgba(168,32,67,.24),rgba(120,21,47,.1));box-shadow:var(--shadow)}
+.plan-promise h2{font-size:1rem;color:#f6cfd9;margin:0 0 10px}
+.plan-promise .pp-lead{font-size:1.18rem;line-height:2.1;font-weight:700;color:#fff;margin:0 0 18px}
+.pp-terms{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.pp-terms li{position:relative;padding-inline-start:20px;line-height:1.9;color:var(--ink)}
+.pp-terms li::before{content:"";position:absolute;inset-inline-start:0;top:.8em;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.pp-terms li.must{padding:10px 20px;border-radius:var(--r-s);border:1px solid var(--accent);background:rgba(168,32,67,.18);font-weight:700}
+.pp-terms li.must::before{display:none}
+@media(min-width:760px){.plan-promise{padding:30px 32px 26px}.plan-promise .pp-lead{font-size:1.32rem}}

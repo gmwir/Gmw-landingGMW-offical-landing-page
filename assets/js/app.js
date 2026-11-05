@@ -93,7 +93,7 @@
   }
   function handoff(f, id, v, tracking, host) {
     var r = host || $('.result', f); if (!r) return; if (host) { host.innerHTML = ''; host.hidden = false; } var text = summary(f, id, v, tracking), box = document.createElement('div'); box.className = 'handoff'; r.appendChild(box);
-    var phones = (CFG.phones || []).map(function (p) { return '<a class="btn tiny ghost" href="tel:' + esc(p.tel) + '">' + esc(p.label) + ' ' + esc(p.display) + '</a>'; }).join(' ');
+    var phones = (CFG.phones || []).filter(function (p) { return p.tel; }).map(function (p) { return '<a class="btn tiny ghost" href="tel:' + esc(p.tel) + '">' + esc(p.label) + ' ' + esc(p.display) + '</a>'; }).join(' ');
     function manual() {
       box.innerHTML = '<p><b>برای ثبت نهایی و هماهنگی،</b> کد رهگیری بالا را به پشتیبانی GMW اعلام کنید:</p><div class="row">' + phones + ' <button type="button" class="btn tiny" data-copy>کپی متن درخواست</button></div>';
       var b = box.querySelector('[data-copy]'); if (b) b.addEventListener('click', function () { try { navigator.clipboard.writeText(text).then(function () { b.textContent = 'کپی شد'; }); } catch (e) { b.textContent = 'کپی ممکن نشد'; } });
@@ -106,7 +106,7 @@
       var KIND = { 'warranty-form': 'warranty', 'coverage-form': 'coverage', 'brake-form': 'brake', 'club-join': 'club', 'tire-form': 'tire', 'basket-form': 'basket', 'insurance-form': 'insurance', 'contact-form': 'contact' };
       var pl = {}; Object.keys(v).forEach(function (k) { var x = v[k]; if (k === 'acceptTerms' || k === 'name' || k === 'phone' || k === 'city' || x == null || x === '' || x === false) return; pl[k] = (x && typeof x === 'object' && !Array.isArray(x)) ? (x.name || '') : x; });
       box.innerHTML = '<p class="hint">در حال ثبت درخواست…</p>';
-      SB.rpcAnon('submit_lead', { p_kind: KIND[id], p_tracking: tracking, p_name: v.name || '', p_phone: C.normalizePhone(v.phone || ''), p_city: v.city || '', p_payload: pl, p_consent: !!(v.consentMarketing || v.consentNotify || v.consent), p_page: location.pathname })
+      SB.rpcAnon('submit_lead', { p_kind: KIND[id], p_tracking: tracking, p_name: v.name || v.buyerName || '', p_phone: C.normalizePhone(v.phone || v.buyerPhone || ''), p_city: v.city || '', p_payload: pl, p_consent: !!(v.consentMarketing || v.consentNotify || v.consent), p_page: location.pathname })
         .then(function () { mirror(); box.innerHTML = '<p><b>درخواست شما ثبت شد.</b> کارشناسان با شمارهٔ ثبت‌شده تماس می‌گیرند. در صورت نیاز: ' + phones + '</p>'; }, manual);
       return;
     }
@@ -130,8 +130,8 @@
   });
   bind('warranty-lookup', function (v, f) {
     var r = C.lookupWarranty(state, v.q);
-    if (!r) { say(f, false, 'روی این دستگاه موردی با این کد یا سریال پیدا نشد. برای استعلام از دستگاه دیگر با پشتیبانی GMW تماس بگیرید.'); return; }
-    say(f, true, 'قطعه: <b>' + esc(r.partName) + '</b> (' + esc(r.brand) + ')<br>تاریخ خرید: ' + C.formatDate(r.purchaseDate) + '<br>وضعیت: <b>' + esc(r.statusLabel) + '</b>');
+    if (!r) { say(f, false, 'روی این دستگاه موردی با این کد پیدا نشد. برای استعلام از دستگاه دیگر با پشتیبانی GMW تماس بگیرید.'); return; }
+    say(f, true, 'قطعه: <b>' + esc(r.partName) + '</b> (' + esc(r.brand) + ')<br>' + (r.purchaseDate ? 'تاریخ خرید: ' + C.formatDate(r.purchaseDate) : 'تاریخ ثبت: ' + C.formatDate(r.createdAt)) + '<br>وضعیت: <b>' + esc(r.statusLabel) + '</b>');
   });
 
   /* ---------- طرح سه‌ساله ---------- */
