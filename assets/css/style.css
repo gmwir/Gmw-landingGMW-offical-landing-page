@@ -8,7 +8,8 @@
   --r:20px;--r-s:14px;
   --shadow:0 1px 0 rgba(255,255,255,.04) inset,0 24px 48px -28px rgba(0,0,0,.9);
   --glow:0 0 0 1px rgba(168,32,67,.55),0 28px 56px -28px rgba(168,32,67,.45);
-  --font:"Estedad","Vazirmatn","Noto Sans Arabic UI","Noto Sans Arabic","SF Arabic",system-ui,-apple-system,"Geeza Pro","Segoe UI",Tahoma,sans-serif;
+  --font:"Inter","Estedad","Vazirmatn","Noto Sans Arabic UI","Noto Sans Arabic","SF Arabic",system-ui,-apple-system,"Geeza Pro","Segoe UI",Tahoma,sans-serif;
+  --font-tech:"Inter Tech","Inter",system-ui,sans-serif;
   --font-brand:"GMW Wordmark","Tektur","Segoe UI",system-ui,sans-serif;
 }
 *{box-sizing:border-box}
@@ -133,7 +134,7 @@ fieldset.chips{border:0;padding:0;margin:0 0 16px}fieldset.chips legend{font-wei
 .result{margin-top:16px;padding:14px 18px;border-radius:var(--r-s);font-size:.95rem}
 .result.ok{background:rgba(110,219,166,.09);border:1px solid rgba(110,219,166,.38);color:#bff0d6}
 .result.bad{background:rgba(245,139,163,.09);border:1px solid rgba(245,139,163,.42);color:#fbc8d4}
-.result .code{display:inline-block;direction:ltr;font:700 1.1rem ui-monospace,Menlo,monospace;background:var(--inset);color:#fff;border:1px dashed var(--accent);padding:2px 12px;border-radius:9px;margin:4px 0}
+.result .code{display:inline-block;direction:ltr;font:700 1.1rem var(--font-tech);font-variant-numeric:tabular-nums;letter-spacing:.02em;background:var(--inset);color:#fff;border:1px dashed var(--accent);padding:2px 12px;border-radius:9px;margin:4px 0}
 .badge{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 10px;border-radius:999px;vertical-align:middle;background:#22222c;color:var(--muted);border:1px solid var(--line-2)}
 .badge.demo{background:rgba(235,197,127,.1);color:var(--warn);border:1px dashed rgba(235,197,127,.55)}
 .badge.ok{background:rgba(110,219,166,.1);color:var(--ok);border-color:rgba(110,219,166,.4)}.badge.bad{background:rgba(245,139,163,.1);color:var(--err);border-color:rgba(245,139,163,.4)}.badge.wait{background:#22222c;color:#cfcbd1}
@@ -170,7 +171,7 @@ fieldset.chips{border:0;padding:0;margin:0 0 16px}fieldset.chips legend{font-wei
 .table{width:100%;border-collapse:collapse;min-width:640px}.table th,.table td{padding:11px 14px;text-align:right;border-bottom:1px solid var(--line);font-size:.88rem;white-space:nowrap;vertical-align:top}
 .table th{background:#1b1a22;color:#d8d3d9;font-weight:700;position:sticky;top:0}.table tbody tr:hover td{background:rgba(255,255,255,.02)}.table tr:last-child td{border-bottom:0}
 .table input,.table select,.mini input,.mini select{min-height:38px;padding:4px 10px;font-size:.88rem;width:auto;max-width:170px;border-radius:10px}
-.codes{list-style:none;padding:0;margin:0;direction:ltr;text-align:left}.codes li{padding:5px 0;font-family:ui-monospace,Menlo,monospace;font-size:.85rem;color:#d8d3d9}.codes .used{text-decoration:line-through;color:var(--muted)}
+.codes{list-style:none;padding:0;margin:0;direction:ltr;text-align:left}.codes li{padding:5px 0;font-family:var(--font-tech);font-variant-numeric:tabular-nums;font-size:.85rem;color:#d8d3d9}.codes .used{text-decoration:line-through;color:var(--muted)}
 .demo-codes summary{cursor:pointer;font-weight:700}
 
 /* فوتر */
