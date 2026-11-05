@@ -14,7 +14,7 @@
 }
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;color-scheme:dark;background:var(--bg)}
-body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.95 var(--font);-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom);scrollbar-color:var(--line-2) transparent;overflow-x:hidden}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.95 var(--font);-webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom);scrollbar-color:var(--line-2) transparent;overflow-x:hidden}
 img,svg{max-width:100%}
 a{color:var(--link);text-decoration:none}a:hover{text-decoration:underline}
 h1,h2,h3{line-height:1.55;margin:0 0 .5em;font-weight:800}
@@ -290,3 +290,7 @@ h1 .gmw{-webkit-text-fill-color:transparent}
 .card{background:linear-gradient(180deg,#171a1f,#12151a);border-color:#2f353d}
 .card:hover{border-color:rgba(240,128,32,.55)}
 .chip,.eyebrow{border-color:rgba(240,128,32,.45)}
+
+/* برندهای همکار: دو ستون ثابت؛ کاشی تنها در ردیف آخر وسط‌چین */
+.partner-grid{grid-template-columns:repeat(2,1fr)}
+.partner-grid>.partner:last-child:nth-child(odd){grid-column:1/-1;justify-self:center;width:calc(50% - 5px)}
