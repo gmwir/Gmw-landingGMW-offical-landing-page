@@ -172,14 +172,14 @@
     now = now || new Date();
     var e = {};
     var scratch = normCode(input.scratchCode);
-    req(e, 'scratchCode', scratch, 'کد اسکرچ را وارد کنید');
     req(e, 'partName', input.partName, 'نام قطعه را وارد کنید');
     req(e, 'brand', input.brand, 'برند را وارد کنید');
     req(e, 'buyerName', input.buyerName, 'نام و نام خانوادگی را وارد کنید');
     if (!isValidMobile(input.buyerPhone)) e.buyerPhone = 'شماره موبایل معتبر نیست (مثال: ۰۹۱۲۳۴۵۶۷۸۹)';
     if (hasErr(e)) return { ok: false, errors: e };
 
-    var code = state.scratchCodes.filter(function (c) { return normCode(c.code) === scratch; })[0];
+    /* فعلاً کد اصالت روی بسته‌ها اعلام نمی‌شود؛ اگر روزی کد وارد شد، همان بررسی قبلی انجام می‌شود */
+    var code = scratch ? state.scratchCodes.filter(function (c) { return normCode(c.code) === scratch; })[0] : { code: '', status: 'unused', optional: true };
     if (!code && state.settings.codeRegistry === false) { code = { code: scratch, status: 'unused' }; state.scratchCodes.push(code); }   // بدون پایگاه کد: اصالت کد را کارشناس بررسی می‌کند
     if (!code) return { ok: false, errors: { scratchCode: 'این کد در سامانه یافت نشد. کد را دوباره بررسی کنید.' } };
     if (code.status !== 'unused') return { ok: false, errors: { scratchCode: 'این کد قبلاً استفاده شده و دوباره قابل ثبت نیست.' } };
@@ -191,7 +191,7 @@
       buyerName: clean(input.buyerName), buyerPhone: normalizePhone(input.buyerPhone),
       status: 'pending_review', customerId: cust.id, createdAt: now.toISOString()
     };
-    code.status = 'used'; code.usedBy = rec.trackingCode;
+    if (!code.optional) { code.status = 'used'; code.usedBy = rec.trackingCode; }
     state.warranties.push(rec);
     audit(state, 'customer', 'create', 'warranty', rec.id, rec.trackingCode);
     return { ok: true, record: rec, statusLabel: WARRANTY_STATUS[rec.status] };
@@ -200,7 +200,7 @@
   function lookupWarranty(state, q) {
     var k = normCode(q);
     if (!k) return null;
-    var w = state.warranties.filter(function (x) { return normCode(x.trackingCode) === k || normCode(x.scratchCode) === k || x.serialKey === k; })[0];
+    var w = state.warranties.filter(function (x) { return normCode(x.trackingCode) === k || (x.scratchCode && normCode(x.scratchCode) === k) || x.serialKey === k; })[0];
     if (!w) return null;
     return { trackingCode: w.trackingCode, partName: w.partName, brand: w.brand, purchaseDate: w.purchaseDate, createdAt: w.createdAt, status: w.status, statusLabel: WARRANTY_STATUS[w.status] };
   }
@@ -440,8 +440,8 @@
     var m = state.clubMembers.filter(function (x) { return x.phone === phone; })[0];
     if (!m) return { ok: false, error: 'ابتدا وارد باشگاه شوید' };
     var k = normCode(code);
-    var w = state.warranties.filter(function (x) { return normCode(x.trackingCode) === k || normCode(x.scratchCode) === k || x.serialKey === k; })[0];
-    if (!w) return { ok: false, error: 'گارانتی با این کد رهگیری/کد اسکرچ یافت نشد' };
+    var w = state.warranties.filter(function (x) { return normCode(x.trackingCode) === k || (x.scratchCode && normCode(x.scratchCode) === k) || x.serialKey === k; })[0];
+    if (!w) return { ok: false, error: 'گارانتی با این کد رهگیری یافت نشد' };
     if (w.buyerPhone !== phone) return { ok: false, error: 'این گارانتی با شماره موبایل دیگری ثبت شده و به این حساب متصل نمی‌شود' };
     if (m.linkedCodes.indexOf(w.trackingCode) >= 0) return { ok: false, error: 'این کد قبلاً متصل شده است' };
     m.linkedCodes.push(w.trackingCode);
