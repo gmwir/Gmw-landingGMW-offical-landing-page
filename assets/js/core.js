@@ -106,11 +106,11 @@
     return {
       version: STATE_VERSION,
       settings: {
-        coverage: { title: 'طرح پوشش سه‌ساله خدمات جلوبندی و عقب‌بندی GMW', years: 3, multiplier: 1, minTotal: 0, cap: null,
+        coverage: { title: 'طرح پوشش چهارساله خدمات جلوبندی و عقب‌بندی GMW', years: 4, multiplier: 1, minTotal: 0, cap: null,
           note: 'قیمت‌ها آزمایشی‌اند و پیش از فروش واقعی باید بازبینی شوند. عدد ۲٬۳۴۵٬۰۰۰ تومان قیمت قطعی این طرح نیست.' },
         brake: {
-          years: 3,
-          quotas: { 1: 3, 2: 3, 3: 3 },
+          years: 4,
+          quotas: { 1: 3, 2: 3, 3: 3, 4: 3 },
           laborRegular: 350000,
           laborMember: 0,
           classes: [
@@ -205,7 +205,7 @@
     return { trackingCode: w.trackingCode, partName: w.partName, brand: w.brand, purchaseDate: w.purchaseDate, createdAt: w.createdAt, status: w.status, statusLabel: WARRANTY_STATUS[w.status] };
   }
 
-  /* ---------- طرح پوشش سه‌ساله ---------- */
+  /* ---------- طرح پوشش چهارساله ---------- */
   var COVERAGE_STATUS = {
     registered: 'درخواست ثبت شد — در انتظار بررسی اصالت خودرو',
     assigned: 'استادکار/کارشناس معرفی شد',
@@ -306,7 +306,7 @@
       step('paid', clean(payload.note));
     } else if (action === 'activate') {
       if (from !== 'paid') return { ok: false, error: 'ابتدا پرداخت (با هماهنگی) ثبت شود' };
-      r.startDate = now.toISOString(); r.endDate = addYears(r.startDate, state.settings.coverage.years || 3);
+      r.startDate = now.toISOString(); r.endDate = addYears(r.startDate, state.settings.coverage.years || 4);
       step('active', ''); enrollBrake(state, r.owner.phone, r.startDate, 'coverage');
     } else return { ok: false, error: 'عملیات نامعتبر' };
     audit(state, actor || 'admin', action, 'coverageRequest', id, r.trackingCode);
@@ -340,7 +340,7 @@
 
   /* ---------- خدمت لنت و سهمیه سالانه ---------- */
   function planYear(startISO, now, years) {
-    now = now || new Date(); years = years || 3;
+    now = now || new Date(); years = years || 4;
     var s = new Date(startISO), n = 0;
     if (isNaN(s)) return 0;
     while (n < years + 1) {
@@ -356,7 +356,7 @@
     now = now || new Date(); phone = normalizePhone(phone);
     var en = state.brakeEnrollments.filter(function (x) { return x.phone === phone; })[0];
     if (!en) return { enrolled: false };
-    var cfg = state.settings.brake, years = cfg.years || 3, table = [], y;
+    var cfg = state.settings.brake, years = cfg.years || 4, table = [], y;
     for (y = 1; y <= years; y++) {
       var q = (en.quotaOverrides && en.quotaOverrides[y] != null) ? en.quotaOverrides[y] : (cfg.quotas[y] != null ? cfg.quotas[y] : 3);
       var used = state.brakeRequests.filter(function (r) { return r.phone === phone && r.planYear === y && ACTIVE_BRAKE.indexOf(r.status) >= 0; }).length;
@@ -382,7 +382,7 @@
 
     var st = brakeQuotaStatus(state, input.phone, now);
     if (!st.enrolled) return { ok: false, code: 'NOT_ENROLLED', error: 'برای این شماره هنوز عضویت واجد شرایط ثبت نشده است. ابتدا عضو باشگاه شوید.' };
-    if (!st.currentYear) return { ok: false, code: 'EXPIRED', error: 'دوره سه‌ساله این عضویت به پایان رسیده است.' };
+    if (!st.currentYear) return { ok: false, code: 'EXPIRED', error: 'دوره چهارساله این عضویت به پایان رسیده است.' };
     if (st.current.remaining <= 0) return { ok: false, code: 'QUOTA_EXHAUSTED', error: 'سهمیهٔ سال ' + faDigits(st.currentYear) + ' (' + faDigits(st.current.quota) + ' نوبت) تکمیل شده است.' };
 
     var rec = {

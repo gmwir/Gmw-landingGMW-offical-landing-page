@@ -13,6 +13,9 @@
   // حالت عمومی: بدون پایگاه کد/مرکز ساختگی. مراکز = دفترهای واقعی GMW، و سایر شهرها با هماهنگی کارشناس.
   function prod(s) {
     s.settings.codeRegistry = false;
+    /* مدت طرح چهار سال؛ حافظهٔ قدیمی مرورگر به‌روز می‌شود */
+    if (s.settings.coverage) s.settings.coverage.years = 4;
+    if (s.settings.brake) { s.settings.brake.years = 4; s.settings.brake.quotas = s.settings.brake.quotas || {}; for (var qy = 1; qy <= 4; qy++) if (s.settings.brake.quotas[qy] == null) s.settings.brake.quotas[qy] = 3; }
     /* بازدیدکنندگانی که نسخهٔ قبلی را دیده‌اند برچسب «آزمایشی» را در حافظهٔ مرورگر دارند؛ در نمایش عمومی حذف می‌شود */
     (((s.settings.brake || {}).classes) || []).forEach(function (c) { c.label = String(c.label || '').replace(/\s*\(آزمایشی\)/g, ''); });
     var offices = (CFG0.phones || []).map(function (p, i) { return { id: 'office' + (i + 1), name: p.label + ' GMW', city: p.label.replace('دفتر ', ''), address: 'با هماهنگی کارشناس' }; });
@@ -76,7 +79,7 @@
   /* ---------- تحویل درخواست به تیم GMW ----------
      سایت سرور ندارد؛ پس: (۱) اگر آدرس دریافت (endpoint) در تنظیمات باشد درخواست همان‌جا ارسال می‌شود؛
      (۲) در غیر این صورت کاربر راهنمایی می‌شود کد رهگیری و متن درخواست را با تلفن پشتیبانی اعلام کند. */
-  var CFG = window.GMW_CONFIG || {}, DELIVER = { 'warranty-form': 'فعال‌سازی گارانتی', 'coverage-form': 'طرح پوشش سه‌ساله', 'brake-form': 'تعویض لنت', 'club-join': 'عضویت باشگاه',
+  var CFG = window.GMW_CONFIG || {}, DELIVER = { 'warranty-form': 'فعال‌سازی گارانتی', 'coverage-form': 'طرح پوشش چهارساله', 'brake-form': 'تعویض لنت', 'club-join': 'عضویت باشگاه',
     'tire-form': 'ثبت‌نام لاستیک', 'basket-form': 'سبد اقتصادی', 'insurance-form': 'تخفیف بیمه', 'contact-form': 'پیام تماس' };
   var HOST = { 'club-join': '#club-delivery' };   // فرم‌هایی که پیام تحویل را بیرون از خودشان نشان می‌دهند (فرم عضویت پس از ثبت پنهان می‌شود)
   var SKIP = { acceptTerms: 1, consentNotify: 1, consentMarketing: 1, consent: 1 };
@@ -134,7 +137,7 @@
     say(f, true, 'قطعه: <b>' + esc(r.partName) + '</b> (' + esc(r.brand) + ')<br>' + (r.purchaseDate ? 'تاریخ خرید: ' + C.formatDate(r.purchaseDate) : 'تاریخ ثبت: ' + C.formatDate(r.createdAt)) + '<br>وضعیت: <b>' + esc(r.statusLabel) + '</b>');
   });
 
-  /* ---------- طرح سه‌ساله ---------- */
+  /* ---------- طرح چهارساله ---------- */
   function timeline(r) {
     
     var steps = C.COVERAGE_STEPS, idx = steps.indexOf(r.status), items = '';
@@ -153,19 +156,15 @@
     state.parts.filter(function (p) { return p.active; }).forEach(function (p) { (groups[p.group] = groups[p.group] || []).push(p); });
     box.innerHTML = Object.keys(groups).map(function (g) {
       return '<div class="parts-group"><h3>' + esc(g) + '</h3>' + groups[g].map(function (p) {
-        return '<label class="part"><input type="checkbox" name="parts" value="' + p.id + '"><span>' + esc(p.name) + '</span><b>' + C.formatToman(p.price) + '</b></label>';
+        return '<label class="part"><input type="checkbox" name="parts" value="' + p.id + '"><span>' + esc(p.name) + '</span></label>';
       }).join('') + '</div>';
     }).join('');
     var form = $('#coverage-form');
     function recalc() {
       var ids = $$('input[name=parts]:checked', form).map(function (i) { return i.value; });
       var p = C.calcCoveragePrice(state, ids);
-      $('#total-amount').textContent = ids.length ? C.formatToman(p.total) : '—';
-      $('#total-bar-amount').textContent = ids.length ? C.formatToman(p.total) : '—';
-      $('#sel-count').textContent = fa(p.items.length);
-      $('#total-bar').hidden = !ids.length;
-      var n = []; if (state.settings.coverage.multiplier !== 1) n.push('ضریب مدیریتی: ' + state.settings.coverage.multiplier);
-      if (p.capApplied) n.push('سقف مبلغ اعمال شد'); $('#total-note').textContent = n.join(' — ') || 'مبالغ برآورد اولیه‌اند و مبلغ نهایی پس از تأیید اصالت خودرو اعلام می‌شود.';
+      var sc = $('#sel-count'); if (sc) sc.textContent = fa(p.items.length);
+      var tb = $('#total-bar'); if (tb) tb.hidden = !ids.length;
     }
     form.addEventListener('change', recalc); recalc();
     bind('coverage-form', function (v, f) {
@@ -188,12 +187,9 @@
   /* ---------- لنت ---------- */
   function initBrake() {
     var cfg = state.settings.brake;
-    var pr = $('#brake-prices'); if (!pr) return;
-    pr.innerHTML = cfg.classes.map(function (c) { return '<div class="price-row"><span>' + esc(c.label) + '</span><b>' + C.formatToman(c.padPrice) + '</b></div>'; }).join('') + '<p class="hint">قیمت‌های لنت برآورد اولیه براساس نرخ عمده‌اند و هنگام هماهنگی نصب نهایی می‌شود.</p>';
-    $('#brake-labor').innerHTML = '<div class="price-row"><span>اجرت در نوبت‌های مجاز عضو</span><b class="free">' + (cfg.laborMember === 0 ? 'رایگان' : C.formatToman(cfg.laborMember)) + '</b></div>' +
-      '<div class="price-row"><span>اجرت عادی (مرجع)</span><s>' + C.formatToman(cfg.laborRegular) + '</s></div><p class="hint">اجرت و قیمت لنت در فاکتور جداگانه درج می‌شوند.</p>';
+    if (!$('#brake-form')) return;
     var padSel = $('#brake-form [name=padClass]'), cSel = $('#brake-form [name=centerId]'), cityIn = $('#brake-form [name=city]');
-    padSel.innerHTML = '<option value="">انتخاب کنید</option>' + cfg.classes.map(function (c) { return '<option value="' + c.id + '">' + esc(c.label) + ' — ' + C.formatToman(c.padPrice) + '</option>'; }).join('');
+    padSel.innerHTML = '<option value="">انتخاب کنید</option>' + cfg.classes.map(function (c) { return '<option value="' + c.id + '">' + esc(c.label) + '</option>'; }).join('');
     function centers() {
       var city = C.clean(cityIn.value), list = state.centers;
       var near = city ? list.filter(function (c) { return c.city === city; }) : [];
@@ -220,7 +216,7 @@
       var res = C.createBrakeRequest(state, v);
       if (!res.ok) { fixErrors(f, res); return res; }
       save(); var r = res.record;
-      say(f, true, 'درخواست ثبت شد. کد رهگیری: ' + trk(r.trackingCode) + '<br>' + esc(r.padLabel) + ' — قیمت لنت: ' + C.formatToman(r.padPrice) + '<br>اجرت نصب: <b>' + (r.laborFee === 0 ? 'رایگان' : C.formatToman(r.laborFee)) + '</b><br>مرکز: ' + esc(r.centerName) + '<br>نوبت‌های باقی‌مانده سال ' + fa(r.planYear) + ': ' + fa(res.remainingAfter));
+      say(f, true, 'درخواست ثبت شد. کد رهگیری: ' + trk(r.trackingCode) + '<br>' + esc(r.padLabel) + '<br>اجرت تعویض: <b>' + (r.laborFee === 0 ? 'رایگان' : 'پس از هماهنگی') + '</b><br>مرکز: ' + esc(r.centerName) + '<br>نوبت‌های باقی‌مانده سال ' + fa(r.planYear) + ': ' + fa(res.remainingAfter));
       return res;
     });
   }
@@ -238,7 +234,7 @@
       $('#m-linked').innerHTML = m.linkedCodes.map(function (c) { return '<li>' + esc(c) + '</li>'; }).join('');
       var h = C.memberHistory(state, m.phone), out = '';
       h.warranties.forEach(function (w) { out += '<li>گارانتی ' + esc(w.partName) + ' — ' + esc(C.WARRANTY_STATUS[w.status]) + ' (' + esc(w.trackingCode) + ')</li>'; });
-      h.coverage.forEach(function (c) { out += '<li>طرح سه‌ساله — ' + esc(C.COVERAGE_STATUS[c.status]) + ' (' + esc(c.trackingCode) + ')</li>'; });
+      h.coverage.forEach(function (c) { out += '<li>طرح چهارساله — ' + esc(C.COVERAGE_STATUS[c.status]) + ' (' + esc(c.trackingCode) + ')</li>'; });
       h.brake.forEach(function (b) { out += '<li>تعویض لنت — ' + C.formatDate(b.date) + ' — ' + esc(b.centerName) + '</li>'; });
       $('#m-history').innerHTML = out ? '<ul class="plain">' + out + '</ul>' : '<p class="muted">هنوز سابقه‌ای ثبت نشده.</p>';
       var q = C.brakeQuotaStatus(state, m.phone);

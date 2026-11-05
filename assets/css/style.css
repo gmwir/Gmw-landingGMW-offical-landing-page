@@ -294,3 +294,7 @@ h1 .gmw{-webkit-text-fill-color:transparent}
 /* برندهای همکار: دو ستون ثابت؛ کاشی تنها در ردیف آخر وسط‌چین */
 .partner-grid{grid-template-columns:repeat(2,1fr)}
 .partner-grid>.partner:last-child:nth-child(odd){grid-column:1/-1;justify-self:center;width:calc(50% - 5px)}
+
+/* چهار سال: دو ستون در موبایل، چهار ستون در صفحهٔ بزرگ */
+.slots{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media(min-width:700px){.slots{grid-template-columns:repeat(4,minmax(0,1fr));max-width:720px}}

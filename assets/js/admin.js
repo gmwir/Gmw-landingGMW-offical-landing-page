@@ -23,7 +23,7 @@
     ['dash', 'گزارش عملکرد', ['owner', 'finance', 'support', 'ops']],
     ['customers', 'مشتریان', ['owner', 'support']],
     ['warranties', 'گارانتی‌ها و کدها', ['owner', 'support']],
-    ['coverage', 'درخواست‌های پوشش سه‌ساله', ['owner', 'ops']],
+    ['coverage', 'درخواست‌های پوشش چهارساله', ['owner', 'ops']],
     ['parts', 'قطعات و قیمت‌گذاری', ['owner', 'finance']],
     ['payments', 'پرداخت‌ها و بازپرداخت‌ها', ['owner', 'finance']],
     ['claims', 'پرونده‌های خسارت', ['owner', 'ops']],
@@ -53,11 +53,11 @@
     dash: function () {
       var paid = state.payments.filter(function (p) { return p.status === 'received' || p.status === 'refund_pending'; }).reduce(function (s, p) { return s + p.amount; }, 0);
       var pendRef = state.refunds.filter(function (r) { return r.status === 'pending'; }).reduce(function (s, r) { return s + r.amount; }, 0);
-      var tiles = [['مشتریان', state.customers.length], ['گارانتی ثبت‌شده', state.warranties.length], ['درخواست سه‌ساله', state.coverageRequests.length], ['پوشش فعال', state.coverageRequests.filter(function (c) { return c.status === 'active'; }).length],
+      var tiles = [['مشتریان', state.customers.length], ['گارانتی ثبت‌شده', state.warranties.length], ['درخواست چهارساله', state.coverageRequests.length], ['پوشش فعال', state.coverageRequests.filter(function (c) { return c.status === 'active'; }).length],
         ['پرداخت آزمایشی', T(paid)], ['بازپرداخت در انتظار', T(pendRef)], ['درخواست لنت', state.brakeRequests.length], ['تعویض انجام‌شده', state.brakeHistory.length], ['درخواست لاستیک', state.tireRequests.length], ['اعضای باشگاه', state.clubMembers.length], ['پیام‌های تماس', state.contacts.length]];
       var reserve = paid;
       return '<div class="tiles">' + tiles.map(function (t) { return '<div class="tile"><b>' + (typeof t[1] === 'number' ? fa(t[1]) : t[1]) + '</b><span>' + t[0] + '</span></div>'; }).join('') + '</div>' +
-        '<div class="notice warn"><b>تفکیک مالی:</b> مبالغ دریافتی طرح سه‌ساله (' + T(reserve) + ' آزمایشی) باید به‌عنوان تعهد آینده در حساب ذخیره جدا از سود جاری نگه‌داری شود. این پنل فقط جداسازی را نشان می‌دهد؛ حسابداری واقعی در Backend انجام می‌شود.</div>';
+        '<div class="notice warn"><b>تفکیک مالی:</b> مبالغ دریافتی طرح چهارساله (' + T(reserve) + ' آزمایشی) باید به‌عنوان تعهد آینده در حساب ذخیره جدا از سود جاری نگه‌داری شود. این پنل فقط جداسازی را نشان می‌دهد؛ حسابداری واقعی در Backend انجام می‌شود.</div>';
     },
     customers: function () { return table([['نام', function (c) { return esc(c.name); }], ['موبایل', function (c) { return esc(c.phone); }], ['شهر', function (c) { return esc(c.city); }], ['ثبت', function (c) { return D(c.createdAt); }]], state.customers); },
     warranties: function () {
@@ -94,7 +94,7 @@
       var b = state.settings.brake;
       return '<div class="admin-sec"><h2>سهمیهٔ هر سال (جداگانه)</h2><form class="mini" data-form="quota">سال ۱: <input name="q1" value="' + b.quotas[1] + '" size="2"> سال ۲: <input name="q2" value="' + b.quotas[2] + '" size="2"> سال ۳: <input name="q3" value="' + b.quotas[3] + '" size="2"> اجرت عضو: <input name="lm" value="' + b.laborMember + '" size="8"> اجرت عادی (مرجع): <input name="lr" value="' + b.laborRegular + '" size="8"><button class="btn tiny">ذخیره</button></form></div>' +
         '<div class="admin-sec"><h2>قیمت لنت (جدا از اجرت)</h2>' + table([['کلاس', function (c) { return esc(c.label); }], ['قیمت', function (c) { return '<input data-pad="' + c.id + '" value="' + c.padPrice + '" size="9">'; }]], b.classes) + '</div>' +
-        '<div class="admin-sec"><h2>عضویت‌ها و استثنای سهمیه</h2>' + table([['موبایل', function (e) { return esc(e.phone); }], ['شروع', function (e) { return D(e.startDate); }], ['منبع', function (e) { return e.source === 'coverage' ? 'طرح سه‌ساله' : 'باشگاه (آزمایشی)'; }], ['وضعیت سهمیه', function (e) { var st = C.brakeQuotaStatus(state, e.phone); return st.table.map(function (r) { return 'سال ' + fa(r.year) + ': ' + fa(r.used) + '/' + fa(r.quota); }).join(' — '); }],
+        '<div class="admin-sec"><h2>عضویت‌ها و استثنای سهمیه</h2>' + table([['موبایل', function (e) { return esc(e.phone); }], ['شروع', function (e) { return D(e.startDate); }], ['منبع', function (e) { return e.source === 'coverage' ? 'طرح چهارساله' : 'باشگاه (آزمایشی)'; }], ['وضعیت سهمیه', function (e) { var st = C.brakeQuotaStatus(state, e.phone); return st.table.map(function (r) { return 'سال ' + fa(r.year) + ': ' + fa(r.used) + '/' + fa(r.quota); }).join(' — '); }],
           ['بازنویسی سهمیهٔ سال جاری', function (e) { var y = C.brakeQuotaStatus(state, e.phone).currentYear; return y ? '<input data-ov="' + e.id + '" data-y="' + y + '" size="2" placeholder="؟"><button class="btn tiny" data-act="ov" data-id="' + e.id + '">ثبت</button>' : '—'; }]], state.brakeEnrollments) + '</div>' +
         '<div class="admin-sec"><h2>درخواست‌های لنت</h2>' + table([['کد', function (r) { return esc(r.trackingCode); }], ['عضو', function (r) { return esc(r.name) + ' — ' + esc(r.phone); }], ['خودرو', function (r) { return esc(r.model) + ' ' + fa(r.year).replace(/٬/g, ''); }], ['لنت / مرکز', function (r) { return esc(r.padLabel) + '<br>' + esc(r.centerName); }], ['سال دوره', function (r) { return fa(r.planYear); }], ['وضعیت', function (r) { return { requested: 'درخواست‌شده', done: 'انجام شد', cancelled: 'لغو' }[r.status] || r.status; }],
           ['اقدام', function (r) { return r.status === 'requested' ? '<button class="btn tiny" data-act="brk-done" data-id="' + r.id + '">ثبت انجام تعویض</button>' : ''; }]], state.brakeRequests) + '</div>';

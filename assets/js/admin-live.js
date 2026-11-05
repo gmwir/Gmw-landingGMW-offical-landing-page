@@ -5,7 +5,7 @@
   'use strict';
   var S = window.GMWSupa, fa = function (n) { return new Intl.NumberFormat('fa-IR').format(n || 0); };
   function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-  var KIND = { warranty: 'گارانتی', coverage: 'پوشش سه‌ساله', brake: 'لنت', club: 'عضویت باشگاه', tire: 'لاستیک', basket: 'سبد اقتصادی', insurance: 'بیمه', contact: 'پیام تماس' };
+  var KIND = { warranty: 'گارانتی', coverage: 'پوشش چهارساله', brake: 'لنت', club: 'عضویت باشگاه', tire: 'لاستیک', basket: 'سبد اقتصادی', insurance: 'بیمه', contact: 'پیام تماس' };
   var STATUS = { 'new': 'جدید', in_review: 'در حال بررسی', approved: 'تأیید شده', rejected: 'رد شده', done: 'انجام شد' };
   var SETTABLE = ['in_review', 'approved', 'rejected', 'done'];   // وضعیت‌هایی که تابع decide_lead می‌پذیرد
   var LABEL = { scratchCode: 'کد اسکرچ', serial: 'سریال قطعه', partName: 'نام قطعه', brand: 'برند', specs: 'مشخصات قطعه', vehicleModel: 'مدل خودرو', vehicleYear: 'سال ساخت', year: 'سال ساخت',
