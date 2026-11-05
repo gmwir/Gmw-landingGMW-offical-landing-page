@@ -48,7 +48,8 @@
       if (el.type === 'checkbox') {
         if (el.name === 'categories' || el.name === 'parts') { (o[el.name] = o[el.name] || []); if (el.checked) o[el.name].push(el.value); }
         else o[el.name] = el.checked;
-      } else if (el.type === 'file') { o[el.name] = el.files && el.files[0] ? { name: el.files[0].name, size: el.files[0].size, type: el.files[0].type } : null; }
+      } else if (el.type === 'radio') { if (el.checked) o[el.name] = el.value; else if (!(el.name in o)) o[el.name] = ''; }
+      else if (el.type === 'file') { o[el.name] = el.files && el.files[0] ? { name: el.files[0].name, size: el.files[0].size, type: el.files[0].type } : null; }
       else o[el.name] = el.value;
     });
     return o;
@@ -80,7 +81,7 @@
      سایت سرور ندارد؛ پس: (۱) اگر آدرس دریافت (endpoint) در تنظیمات باشد درخواست همان‌جا ارسال می‌شود؛
      (۲) در غیر این صورت کاربر راهنمایی می‌شود کد رهگیری و متن درخواست را با تلفن پشتیبانی اعلام کند. */
   var CFG = window.GMW_CONFIG || {}, DELIVER = { 'warranty-form': 'فعال‌سازی گارانتی', 'coverage-form': 'طرح پوشش چهارساله', 'brake-form': 'تعویض لنت', 'club-join': 'عضویت باشگاه',
-    'tire-form': 'ثبت‌نام لاستیک', 'basket-form': 'سبد اقتصادی', 'insurance-form': 'تخفیف بیمه', 'contact-form': 'پیام تماس' };
+    'tire-form': 'ثبت‌نام لاستیک', 'basket-form': 'سبد اقتصادی', 'insurance-form': 'تخفیف بیمه', 'contact-form': 'پیام تماس', 'claim-form': 'درخواست استفاده از گارانتی' };
   var HOST = { 'club-join': '#club-delivery' };   // فرم‌هایی که پیام تحویل را بیرون از خودشان نشان می‌دهند (فرم عضویت پس از ثبت پنهان می‌شود)
   var SKIP = { acceptTerms: 1, consentNotify: 1, consentMarketing: 1, consent: 1 };
   function summary(f, id, v, tracking) {
@@ -106,7 +107,7 @@
     function mirror() { if (CFG.endpoint) { try { post().catch(function () {}); } catch (e) {} } }
     var SB = window.GMWSupa;
     if (SB && SB.configured) {   // Supabase: فقط از تابع submit_lead؛ جدول‌ها برای عموم بسته‌اند
-      var KIND = { 'warranty-form': 'warranty', 'coverage-form': 'coverage', 'brake-form': 'brake', 'club-join': 'club', 'tire-form': 'tire', 'basket-form': 'basket', 'insurance-form': 'insurance', 'contact-form': 'contact' };
+      var KIND = { 'warranty-form': 'warranty', 'coverage-form': 'coverage', 'brake-form': 'brake', 'club-join': 'club', 'tire-form': 'tire', 'basket-form': 'basket', 'insurance-form': 'insurance', 'contact-form': 'contact', 'claim-form': 'warranty' };
       var pl = {}; Object.keys(v).forEach(function (k) { var x = v[k]; if (k === 'acceptTerms' || k === 'name' || k === 'phone' || k === 'city' || x == null || x === '' || x === false) return; pl[k] = (x && typeof x === 'object' && !Array.isArray(x)) ? (x.name || '') : x; });
       box.innerHTML = '<p class="hint">در حال ثبت درخواست…</p>';
       SB.rpcAnon('submit_lead', { p_kind: KIND[id], p_tracking: tracking, p_name: v.name || v.buyerName || '', p_phone: C.normalizePhone(v.phone || v.buyerPhone || ''), p_city: v.city || '', p_payload: pl, p_consent: !!(v.consentMarketing || v.consentNotify || v.consent), p_page: location.pathname })
@@ -297,6 +298,65 @@
     });
   });
 
-  initCoverage(); initBrake(); initClub();
+
+  /* ---------- درخواست استفاده از گارانتی / بازگشت کالا ---------- */
+  function validIban(raw) {
+    var v = C.normalizeDigits(String(raw || '')).toUpperCase().replace(/[\s-]/g, '');
+    if (/^\d{24}$/.test(v)) v = 'IR' + v;
+    if (!/^IR\d{24}$/.test(v)) return '';
+    var r = (v.slice(4) + '1827' + v.slice(2, 4)), m = 0;   // I=18, R=27
+    for (var i = 0; i < r.length; i++) m = (m * 10 + (r.charCodeAt(i) - 48)) % 97;
+    return m === 1 ? v : '';
+  }
+  function initClaim() {
+    var form = $('#claim-form'); if (!form) return;
+    var LR = (CFG0.laborRates || {}), groups = LR.groups || [], rates = {};
+    $('#labor-list').innerHTML = groups.map(function (g) {
+      return '<div class="parts-group"><h3>' + esc(g.name) + '</h3>' + g.items.map(function (it) {
+        rates[it.id] = it;
+        return '<div class="labor-row"><label class="part"><input type="checkbox" name="labor" value="' + esc(it.id) + '"><span>' + esc(it.label) + (it.perSide ? ' <small class="muted">(هر طرف)</small>' : '') + '</span><b>' + C.formatToman(it.rate) + '</b></label>' +
+          (it.perSide ? '<select class="labor-qty" name="qty-' + esc(it.id) + '" aria-label="تعداد برای ' + esc(it.label) + '" disabled><option value="1">یک طرف</option><option value="2">دو طرف</option></select>' : '') + '</div>';
+      }).join('') + '</div>';
+    }).join('');
+    function sel() {
+      return $$('input[name=labor]:checked', form).map(function (i) { var it = rates[i.value], q = 1, qs = form.querySelector('[name="qty-' + i.value + '"]'); if (qs) q = parseInt(qs.value, 10) || 1; return { it: it, q: q }; });
+    }
+    function recalc() {
+      $$('input[name=labor]', form).forEach(function (i) { var qs = form.querySelector('[name="qty-' + i.value + '"]'); if (qs) qs.disabled = !i.checked; });
+      var items = sel(), total = items.reduce(function (a, x) { return a + x.it.rate * x.q; }, 0);
+      $('#labor-total').textContent = C.formatToman(total);
+      form.laborTotal.value = String(total);
+      form.laborItems.value = items.map(function (x) { return x.it.label + (x.q > 1 ? ' ×' + fa(x.q) : '') + ' (' + C.formatToman(x.it.rate * x.q) + ')'; }).join('؛ ');
+      var type = (form.querySelector('[name=claimType]:checked') || {}).value || '';
+      $('#bank-box').hidden = !(type === 'بازگشت وجه' || total > 0);
+    }
+    form.addEventListener('change', recalc); recalc();
+    bind('claim-form', function (v, f) {
+      var e = {};
+      if (!C.clean(v.partName)) e.partName = 'نام قطعه را وارد کنید';
+      if (!C.clean(v.brand)) e.brand = 'برند قطعه را وارد کنید';
+      if (!C.clean(v.model)) e.model = 'مدل خودرو را وارد کنید';
+      if (!C.clean(v.defect)) e.defect = 'ایراد قطعه را بنویسید';
+      if (!v.claimType) e.claimType = 'یکی از دو گزینه را انتخاب کنید';
+      if (!C.clean(v.name)) e.name = 'نام را وارد کنید';
+      if (!C.isValidMobile(v.phone)) e.phone = 'شماره موبایل معتبر نیست';
+      if (!C.clean(v.city)) e.city = 'شهر را وارد کنید';
+      var needBank = v.claimType === 'بازگشت وجه' || parseInt(v.laborTotal, 10) > 0;
+      if (needBank) {
+        var ib = validIban(v.iban); if (!ib) e.iban = 'شمارهٔ شبا معتبر نیست (۲۴ رقم بعد از IR)'; else { v.iban = ib; f.iban.value = ib; }
+        if (!C.clean(v.accountHolder)) e.accountHolder = 'نام صاحب حساب را وارد کنید';
+      } else { v.iban = ''; v.accountHolder = ''; }
+      if (!v.acceptTerms) e.acceptTerms = 'پذیرش شرایط لازم است';
+      if (Object.keys(e).length) { say(f, false, 'لطفاً خطاهای فرم را اصلاح کنید.'); return { ok: false, errors: e }; }
+      state.claims = state.claims || [];
+      var rec = { id: 'clm-' + Date.now().toString(36), trackingCode: C.trackingCode(state, 'R'), type: v.claimType, partName: C.clean(v.partName), brand: C.clean(v.brand),
+        phone: C.normalizePhone(v.phone), laborTotal: parseInt(v.laborTotal, 10) || 0, status: 'registered', createdAt: new Date().toISOString() };
+      state.claims.push(rec); save();
+      delete v.labor; Object.keys(v).forEach(function (k) { if (k.indexOf('qty-') === 0) delete v[k]; });
+      say(f, true, 'درخواست شما ثبت شد؛ هیچ مبلغی دریافت یا پرداخت نشد.<br>کد رهگیری: ' + trk(rec.trackingCode) + '<br>نوع درخواست: <b>' + esc(rec.type) + '</b>' + (rec.laborTotal ? '<br>اجرت تقریبی انتخاب‌شده: <b>' + C.formatToman(rec.laborTotal) + '</b>' : '') + '<br>کارشناس GMW پس از بررسی با شما تماس می‌گیرد.');
+      return { ok: true, record: rec };
+    });
+  }
+  initCoverage(); initBrake(); initClub(); initClaim();
   save();
 })();
