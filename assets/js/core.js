@@ -238,12 +238,11 @@
     req(e, 'name', o.name, 'نام را وارد کنید');
     if (!isValidMobile(o.phone)) e.phone = 'شماره موبایل معتبر نیست';
     req(e, 'city', o.city, 'شهر را وارد کنید');
-    req(e, 'address', o.address, 'آدرس را وارد کنید');
     req(e, 'model', o.model, 'مدل خودرو را وارد کنید');
-    checkVehicleYear(e, 'year', o.year);
-    var km = toInt(o.mileage);
-    if (isNaN(km) || km < 0 || km > 2000000) e.mileage = 'کارکرد (کیلومتر) را درست وارد کنید';
-    req(e, 'accident', o.accident, 'سابقه تصادف را مشخص کنید');
+    /* فرم کوتاه: سال ساخت، کارکرد، آدرس و سابقه‌ها را کارشناس تلفنی می‌پرسد؛ اگر وارد شده باشند فقط بررسی می‌شوند */
+    if (o.year) checkVehicleYear(e, 'year', o.year);
+    var km = o.mileage ? toInt(o.mileage) : null;
+    if (km !== null && (isNaN(km) || km < 0 || km > 2000000)) e.mileage = 'کارکرد (کیلومتر) را درست وارد کنید';
     if (!input.acceptTerms) e.acceptTerms = 'پذیرش شرایط و استثناها الزامی است';
     if (hasErr(e)) return { ok: false, errors: e };
 
@@ -253,7 +252,7 @@
       id: id, trackingCode: trackingCode(state, 'C'), customerId: cust.id,
       parts: price.items, subtotal: price.subtotal, total: price.total,
       owner: { name: clean(o.name), phone: normalizePhone(o.phone), city: clean(o.city), address: clean(o.address), model: clean(o.model),
-        year: parseInt(normalizeDigits(o.year), 10), mileage: km, accident: clean(o.accident), repairs: clean(o.repairs), notes: clean(o.notes) },
+        year: o.year ? parseInt(normalizeDigits(o.year), 10) : null, mileage: km, accident: clean(o.accident), repairs: clean(o.repairs), notes: clean(o.notes) },
       status: 'registered', technicianId: '', inspectionNotes: '', decisionReason: '', startDate: '', endDate: '',
       history: [{ at: now.toISOString(), status: 'registered', by: 'customer', note: '' }],
       createdAt: now.toISOString()
