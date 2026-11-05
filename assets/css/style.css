@@ -32,7 +32,7 @@ p{margin:0 0 1em}
 .site-header{position:sticky;top:0;z-index:30;background:rgba(9,9,13,.82);-webkit-backdrop-filter:saturate(160%) blur(16px);backdrop-filter:saturate(160%) blur(16px);border-bottom:1px solid var(--line)}
 .bar{display:flex;align-items:center;gap:12px;min-height:66px}
 .logo{display:flex;align-items:center;gap:10px;color:var(--ink)}.logo:hover{text-decoration:none}
-.logo-mark{width:38px;height:38px;flex:none;border-radius:12px;box-shadow:0 8px 20px -8px rgba(168,32,67,.8)}
+.logo-mark{height:38px;width:auto;flex:none;display:block}.foot-logo .logo-mark{height:42px}
 .logo-text{display:flex;flex-direction:column;line-height:1.15}
 .logo-text b{font:800 1.2rem/1 system-ui,-apple-system,"Segoe UI",sans-serif;letter-spacing:.2em;direction:ltr}
 .logo-text small{font-size:.66rem;color:var(--muted);margin-top:4px;display:none}
