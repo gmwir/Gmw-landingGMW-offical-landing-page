@@ -11,7 +11,14 @@
   function uuid() { if (window.crypto && crypto.randomUUID) return crypto.randomUUID(); var a = new Uint8Array(16); (window.crypto || {}).getRandomValues ? crypto.getRandomValues(a) : a.forEach(function (_, i) { a[i] = Math.random() * 256; }); a[6] = (a[6] & 15) | 64; a[8] = (a[8] & 63) | 128; var h = Array.prototype.map.call(a, function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); return h.replace(/(.{8})(.{4})(.{4})(.{4})(.{12})/, '$1-$2-$3-$4-$5'); }
 
   /* ۱) بازدید ناشناس اول‌شخص (فقط شناسهٔ تصادفی مرورگر، بدون IP/نام/تلفن) */
-  if (S && S.configured && !dnt && location.pathname.indexOf('/admin') !== 0) {
+  /* دقت آمار: ربات‌ها و دستگاه‌های مدیر شمرده نمی‌شوند. با باز کردن «?gmw-ignore=1» یک بار، این دستگاه برای همیشه از آمار کنار می‌رود («?gmw-ignore=0» برای برگشت). */
+  try { var q = new URLSearchParams(location.search).get('gmw-ignore'); if (q === '1') set('gmw_ignore', '1'); else if (q === '0') { localStorage.removeItem('gmw_ignore'); } } catch (e) {}
+  var ignore = get('gmw_ignore') === '1';
+  var bot = navigator.webdriver === true || /bot|crawl|spider|slurp|headless|lighthouse|pagespeed|preview|facebookexternalhit|embedly|python|curl|wget/i.test(navigator.userAgent || '');
+  var counted = !dnt && !ignore && !bot && location.pathname.indexOf('/admin') !== 0;
+  /* آمار بدون کوکی Vercel (بازدیدکنندهٔ متمایز، منبع ورود، کشور، دستگاه) — پس از فعال‌سازی در داشبورد Vercel */
+  if (counted) { window.va = window.va || function () { (window.va.q = window.va.q || []).push(arguments); }; var vs = document.createElement('script'); vs.defer = true; vs.src = '/_vercel/insights/script.js'; document.head.appendChild(vs); }
+  if (S && S.configured && counted) {
     var vid = get(VK); if (!vid) { vid = uuid(); set(VK, vid); }
     var ref = ''; try { if (document.referrer) { var h = new URL(document.referrer).hostname; if (h !== location.hostname) ref = h; } } catch (e) {}
     var w = window.innerWidth, dev = w < 700 ? 'mobile' : w < 1100 ? 'tablet' : 'desktop';
