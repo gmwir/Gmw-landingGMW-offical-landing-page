@@ -13,6 +13,8 @@
   // حالت عمومی: بدون پایگاه کد/مرکز ساختگی. مراکز = دفترهای واقعی GMW، و سایر شهرها با هماهنگی کارشناس.
   function prod(s) {
     s.settings.codeRegistry = false;
+    /* بازدیدکنندگانی که نسخهٔ قبلی را دیده‌اند برچسب «آزمایشی» را در حافظهٔ مرورگر دارند؛ در نمایش عمومی حذف می‌شود */
+    (((s.settings.brake || {}).classes) || []).forEach(function (c) { c.label = String(c.label || '').replace(/\s*\(آزمایشی\)/g, ''); });
     var offices = (CFG0.phones || []).map(function (p, i) { return { id: 'office' + (i + 1), name: p.label + ' GMW', city: p.label.replace('دفتر ', ''), address: 'با هماهنگی کارشناس' }; });
     offices.push({ id: 'other', name: 'سایر شهرها (هماهنگی با کارشناس)', city: 'سایر', address: 'مرکز نصب پس از هماهنگی تعیین می‌شود' });
     s.centers = offices; return s;
@@ -67,7 +69,7 @@
     f.addEventListener('submit', function (e) {
       e.preventDefault(); clearErr(f); var v = values(f), r = fn(v, f);
       if (r && r.errors) showErr(f, r.errors);
-      else if (r && r.ok && r.record && DELIVER[id]) handoff(f, id, v, r.record.trackingCode);
+      else if (r && r.ok && r.record && DELIVER[id]) handoff(f, id, v, r.record.trackingCode, HOST[id] ? $(HOST[id]) : null);
     });
   }
 
@@ -76,6 +78,7 @@
      (۲) در غیر این صورت کاربر راهنمایی می‌شود کد رهگیری و متن درخواست را با تلفن پشتیبانی اعلام کند. */
   var CFG = window.GMW_CONFIG || {}, DELIVER = { 'warranty-form': 'فعال‌سازی گارانتی', 'coverage-form': 'طرح پوشش سه‌ساله', 'brake-form': 'تعویض لنت', 'club-join': 'عضویت باشگاه',
     'tire-form': 'ثبت‌نام لاستیک', 'basket-form': 'سبد اقتصادی', 'insurance-form': 'تخفیف بیمه', 'contact-form': 'پیام تماس' };
+  var HOST = { 'club-join': '#club-delivery' };   // فرم‌هایی که پیام تحویل را بیرون از خودشان نشان می‌دهند (فرم عضویت پس از ثبت پنهان می‌شود)
   var SKIP = { acceptTerms: 1, consentNotify: 1, consentMarketing: 1, consent: 1 };
   function summary(f, id, v, tracking) {
     var lines = ['درخواست: ' + DELIVER[id], 'کد رهگیری: ' + tracking];
@@ -88,8 +91,8 @@
     });
     return lines.join('\n');
   }
-  function handoff(f, id, v, tracking) {
-    var r = $('.result', f); if (!r) return; var text = summary(f, id, v, tracking), box = document.createElement('div'); box.className = 'handoff'; r.appendChild(box);
+  function handoff(f, id, v, tracking, host) {
+    var r = host || $('.result', f); if (!r) return; if (host) { host.innerHTML = ''; host.hidden = false; } var text = summary(f, id, v, tracking), box = document.createElement('div'); box.className = 'handoff'; r.appendChild(box);
     var phones = (CFG.phones || []).map(function (p) { return '<a class="btn tiny ghost" href="tel:' + esc(p.tel) + '">' + esc(p.label) + ' ' + esc(p.display) + '</a>'; }).join(' ');
     function manual() {
       box.innerHTML = '<p><b>برای ثبت نهایی و هماهنگی،</b> کد رهگیری بالا را به پشتیبانی GMW اعلام کنید:</p><div class="row">' + phones + ' <button type="button" class="btn tiny" data-copy>کپی متن درخواست</button></div>';
@@ -127,7 +130,7 @@
   });
   bind('warranty-lookup', function (v, f) {
     var r = C.lookupWarranty(state, v.q);
-    if (!r) { say(f, false, 'موردی با این کد یا سریال پیدا نشد.'); return; }
+    if (!r) { say(f, false, 'روی این دستگاه موردی با این کد یا سریال پیدا نشد. برای استعلام از دستگاه دیگر با پشتیبانی GMW تماس بگیرید.'); return; }
     say(f, true, 'قطعه: <b>' + esc(r.partName) + '</b> (' + esc(r.brand) + ')<br>تاریخ خرید: ' + C.formatDate(r.purchaseDate) + '<br>وضعیت: <b>' + esc(r.statusLabel) + '</b>');
   });
 
@@ -176,7 +179,7 @@
     });
     bind('coverage-track', function (v, f) {
       var r = C.coverageStatusView(state, v.q);
-      if (!r) { say(f, false, 'درخواستی با این کد پیدا نشد.'); return; }
+      if (!r) { say(f, false, 'روی این دستگاه درخواستی با این کد پیدا نشد. برای پیگیری از دستگاه دیگر با پشتیبانی GMW تماس بگیرید.'); return; }
       say(f, true, 'وضعیت: <b>' + esc(r.statusLabel) + '</b>' + (r.technicianName ? '<br>استادکار/کارشناس: ' + esc(r.technicianName) : '') + timeline(r) +
         (r.status === 'active' ? '<small>دورهٔ پوشش: ' + C.formatDate(r.startDate) + ' تا ' + C.formatDate(r.endDate) + '</small>' : ''));
     });
@@ -186,7 +189,7 @@
   function initBrake() {
     var cfg = state.settings.brake;
     var pr = $('#brake-prices'); if (!pr) return;
-    pr.innerHTML = cfg.classes.map(function (c) { return '<div class="price-row"><span>' + esc(c.label) + '</span><b>' + C.formatToman(c.padPrice) + '</b></div>'; }).join('') + '<p class="hint">قیمت لنت براساس نرخ عمده است و هنگام هماهنگی نصب نهایی می‌شود.</p>';
+    pr.innerHTML = cfg.classes.map(function (c) { return '<div class="price-row"><span>' + esc(c.label) + '</span><b>' + C.formatToman(c.padPrice) + '</b></div>'; }).join('') + '<p class="hint">قیمت‌های لنت برآورد اولیه براساس نرخ عمده‌اند و هنگام هماهنگی نصب نهایی می‌شود.</p>';
     $('#brake-labor').innerHTML = '<div class="price-row"><span>اجرت در نوبت‌های مجاز عضو</span><b class="free">' + (cfg.laborMember === 0 ? 'رایگان' : C.formatToman(cfg.laborMember)) + '</b></div>' +
       '<div class="price-row"><span>اجرت عادی (مرجع)</span><s>' + C.formatToman(cfg.laborRegular) + '</s></div><p class="hint">اجرت و قیمت لنت در فاکتور جداگانه درج می‌شوند.</p>';
     var padSel = $('#brake-form [name=padClass]'), cSel = $('#brake-form [name=centerId]'), cityIn = $('#brake-form [name=city]');
@@ -243,12 +246,15 @@
     }
     bind('club-join', function (v, f) {
       var res = C.joinClub(state, v); if (!res.ok) { fixErrors(f, res); return res; }
-      save(); setSession(res.member.phone); render(); return res;
+      save(); setSession(res.member.phone); render();
+      /* عضویت جدید مثل بقیهٔ فرم‌ها به تیم GMW تحویل می‌شود (پیش‌تر فقط روی همین دستگاه می‌ماند)؛ ورود دوباره عضو موجود ارسال تکراری ندارد */
+      if (res.created) res.record = { trackingCode: C.trackingCode(state, 'K') };
+      return res;
     });
     bind('club-login', function (v, f) {
       var p = C.normalizePhone(v.phone), m = state.clubMembers.filter(function (x) { return x.phone === p; })[0];
       if (!C.isValidMobile(p)) { showErr(f, { phone: 'شماره موبایل معتبر نیست' }); return; }
-      if (!m) { say(f, false, 'با این شماره عضویتی پیدا نشد. ابتدا عضو شوید.'); return; }
+      if (!m) { say(f, false, 'روی این دستگاه عضویتی با این شماره پیدا نشد. ابتدا عضو شوید یا برای دستگاه دیگر با پشتیبانی GMW هماهنگ کنید.'); return; }
       setSession(p); render();
     });
     bind('club-vehicle', function (v, f) {

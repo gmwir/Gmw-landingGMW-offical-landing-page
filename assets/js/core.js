@@ -114,9 +114,9 @@
           laborRegular: 350000,
           laborMember: 0,
           classes: [
-            { id: 'c1', label: 'سواری اقتصادی (آزمایشی)', padPrice: 280000 },
-            { id: 'c2', label: 'سواری میان‌رده (آزمایشی)', padPrice: 420000 },
-            { id: 'c3', label: 'سواری بالارده / SUV (آزمایشی)', padPrice: 650000 }
+            { id: 'c1', label: 'سواری اقتصادی', padPrice: 280000 },
+            { id: 'c2', label: 'سواری میان‌رده', padPrice: 420000 },
+            { id: 'c3', label: 'سواری بالارده / SUV', padPrice: 650000 }
           ]
         }
       },
